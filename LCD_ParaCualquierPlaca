@@ -1,0 +1,35 @@
+#include <16F877A.h>
+#fuses NOWDT,NOLVT,HS,NOPROTECT
+
+#use delay (clock=4000000)
+#include <lcd.c>
+
+int y = 0;
+int x = 0;
+
+char M[]={"Hola, somos Hannia y Mario  Hola, somos Hannia y Mario"};//Variable de tipo char sin [] un límite, con el mensaje que se va a desplazar dos veces 
+char B[16]={""}; //El número de carácteres va a depender del LCD que nosotros estemos ocupando
+
+void main{
+   lcd_init(); //instrucción de inicio
+   do{
+   for(y=0;y<16;y++){ //Asignamos valores a nuestro LCD, la condición del for depende del tamaño del LCD
+      B[y]=M[y+x]; //Asignamos los primeros 16 valores del arreglo A, como x va a ir incrementando se van a ir recorriendo los valores que se muestraen en el LCD 
+   }
+      lcd_gotoxy(1,1); //nos vamos a la fila 1, La posición del msj siempre es la misma, lo que modificamos es el arreglo B
+      printf(lcd_putc,"%s";B);//Imprimimos el mensaje
+      lcd_gotoxy(1,2);
+      printf(lcd_putc,"Los más compañeritos");
+      
+      delay_ms(30); //delay en milis
+      x++; //Cada que se cumpla esto sumamos 1 a x
+      
+      
+      if(x==27){ //Largo del mensaje que vamos a imprimir hasata el doble espacio donde repetimos el msj menos 1
+         x = 0;
+      }
+      
+   }while(TRUE); //ciclo infinito do while
+   
+
+}
