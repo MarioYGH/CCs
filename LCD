@@ -1,0 +1,28 @@
+//CÓDIGO LCD, FÁCIL PERO SOLO PARA 16X2, esto porque en los LCDs de más lineas la 3ra es la continuación de la primera y la cuarta de la segunda 
+
+#include <16F877A.h>
+#fuses NOWDT,XT,NOPROTECT
+
+#use delay (clock=4000000)
+#include <lcd.c>
+
+int x = 1;
+char M[]={"Hola, somos Hannia y Mario  Hola, somos Hannia y Mario"};//Variable de tipo char sin [] un límite, con el mensaje que se va a desplazar dos veces 
+
+void main(){
+lcd_init(); //instrucción de inicio
+
+   do{
+      lcd_gotoxy(x,1); //nos vamos a la fila 1 Pero modificamos la posición x del msj
+      printf(lcd_putc,"%s",M);//Imprimimos el mensaje
+      delay_ms(50); //delay en milis
+      x--;
+      
+      if(x==-27){ //Largo del mensaje que vamos a imprimir hasata el doble espacio donde repetimos el msj menos 1
+         x = 1;
+      }
+      
+   }while(TRUE); //ciclo infinito do while
+   
+
+}
