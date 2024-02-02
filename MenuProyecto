@@ -1,0 +1,137 @@
+#include <16F877A.h>
+#fuses NOWDT, XT, NOPROTECT, NOLVP
+
+#use delay(clock = 4000000)
+#include <lcd1.c>
+#include <kbd1.c>
+
+int x = 1;
+int y = 1;
+int A=1; 
+int contador = 1;
+int posicion = 0; 
+
+///////////////////////////////////////////////////////////////////////
+void op1(){
+                    printf(lcd_putc, "\fRegistra un");
+                    lcd_gotoxy(1, 2);
+                    printf(lcd_putc, "medicamento");
+                    delay_ms(2000);
+                    printf(lcd_putc, "\fPon un nombre");
+                    lcd_gotoxy(1, 2);
+                    
+                     while (TRUE) {
+        char k = kbd_getc();
+        k=kbd_getc(); 
+        y=k-48;  //conversión numérica
+        
+        switch (y) {
+        
+             case 5:
+                contador++;
+                if (contador > 26) {  // 26 letras en el alfabeto
+                    contador = 1;  // Reiniciar a 'A'
+                }
+                lcd_gotoxy(posicion, 2);
+                lcd_putc('A' + contador - 1);  // Convertir el contador a letra ASCII
+                break;  
+                
+             case 0:
+                contador--;
+                if (contador < 1) {
+                    contador = 26;  // Configurar a 'Z'
+                }
+                lcd_gotoxy(posicion, 2);
+                lcd_putc('A' + contador - 1);  // Convertir el contador a letra ASCII
+                break;
+            case 9:
+                posicion++;
+                if (posicion >= 10) {
+                    posicion = 9;
+                }
+                break;
+            case 7:
+                posicion--;
+                if (posicion < 0) {
+                    posicion = 0;
+                }
+                break;
+                    
+                    printf(lcd_putc, "\fSELECCIONA\nUNA OPCION\n");
+                    delay_ms(2000);
+                    printf(lcd_putc, "\fOpcion 1 <=");
+                    lcd_gotoxy(1, 2);
+                    printf(lcd_putc, "Opcion 2");
+                    A = 1;
+           }
+        }
+     }
+
+///////////////////////////////////////////////////////////////////////
+void op2(){
+                    printf(lcd_putc, "\fElije la opcion");
+                    lcd_gotoxy(1, 2);
+                    printf(lcd_putc, "a borrar");
+                    delay_ms(2000);
+                    printf(lcd_putc, "\fSELECCIONA\nUNA OPCION\n");
+                    delay_ms(2000);
+                    printf(lcd_putc, "\fOpcion 1 <=");
+                    lcd_gotoxy(1, 2);
+                    printf(lcd_putc, "Opcion 2");
+                    A = 1;
+}
+/////////////////////////////////////////////////////////////////////////
+void menu() {
+    set_tris_D(0xFF); // Inputs
+    lcd_init();
+    kbd_init();
+    port_b_pullups(TRUE);
+    printf(lcd_putc, "\fSELECCIONA\nUNA OPCION\n");
+    delay_ms(2000);
+    printf(lcd_putc, "\fOpcion 1 <=");
+    lcd_gotoxy(1, 2);
+    printf(lcd_putc, "Opcion 2");
+    
+
+    while (TRUE) {
+        char key = kbd_getc();
+        key=kbd_getc(); 
+        x=key-48;  //conversión numérica
+        
+        switch (x) {
+            case 1:
+                A = 1;
+                printf(lcd_putc, "\fOpcion 1 <=");
+                lcd_gotoxy(1, 2);
+                printf(lcd_putc, "Opcion 2");
+                delay_ms(200);
+                break;
+
+            case 2:
+                A = 2;
+                printf(lcd_putc, "\fOpcion 1");
+                lcd_gotoxy(1, 2);
+                printf(lcd_putc, "Opcion 2 <=");
+                delay_ms(200);
+                break; 
+                
+             case 8:
+              if (A == 1) {
+      op1();  
+    } else if (A == 2) {
+       op2();
+    }
+                    break;
+         
+            default:
+                break;
+        }
+
+    } 
+}
+//////////////////////////////////////////////////////////////////////////////////
+void main() {
+    while (TRUE) {
+        menu();
+    }
+}
