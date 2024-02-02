@@ -1,0 +1,83 @@
+#include <16F877A.h>
+#include <stdbool.h>
+#fuses XT, NOWDT, NOPROTECT, NOLVP, PUT
+#use delay(clock=4000000)
+
+// Definición de los patrones para los dígitos hexadecimales
+byte CONST sec[16] = {0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x07, 0x7F, 0x6F, 0x77, 0x7C, 0x39, 0x5E, 0x79, 0x71}; 
+
+// Definición de los puertos
+#byte port_b=6
+#byte port_c=7
+#byte port_d=8
+
+// Declaración de variables y banderas
+bool botonPresionado[4] = {false, false, false, false}; // Estado de los botones para cada display
+int cont[4] = {0, 0, 0, 0}; // Contador para cada display
+int tm = 100; // Tiempo de retardo para la visualización
+
+// Función para controlar la visualización en los displays
+void disp(int d1, int d2, int d3, int d4){
+   // Mostrar el primer dígito en el primer display
+   port_b = sec[d1];
+   bit_set(port_c, 0);
+   delay_ms(tm);
+   bit_clear(port_c, 0);
+
+   // Mostrar el segundo dígito en el segundo display
+   port_b = sec[d2];
+   bit_set(port_c, 1);
+   delay_ms(tm);
+   bit_clear(port_c, 1);
+
+   // Mostrar el tercer dígito en el tercer display
+   port_b = sec[d3];
+   bit_set(port_c, 2);
+   delay_ms(tm);
+   bit_clear(port_c, 2);
+
+   // Mostrar el cuarto dígito en el cuarto display
+   port_b = sec[d4];
+   bit_set(port_c, 3);
+   delay_ms(tm);
+   bit_clear(port_c, 3);
+}
+
+// Función para manejar la entrada de los botones
+void manejarBotones() {
+   int i;
+   for (i = 0; i < 4; i++) {
+      if (bit_test(port_d, i) == 0 && !botonPresionado[i]) {
+         botonPresionado[i] = true;
+         cont[i]++;
+         if (cont[i] > 0x0F) { // Reiniciar a cero si se alcanza el límite (F en hexadecimal)
+            cont[i] = 0;
+         }
+      } else if (bit_test(port_d, i) == 1) {
+         botonPresionado[i] = false;
+      }
+   }
+}
+
+// Función principal
+void main(){
+   // Configuración de los puertos de entrada/salida
+   set_tris_b(0);
+   set_tris_c(0);
+   set_tris_d(0x0F); // Configurar los primeros 4 bits del puerto D como entrada
+
+   // Bucle principal
+   while(true){
+      // Realizar las funciones correspondientes a los botones
+      manejarBotones();
+
+      // Obtener los dígitos para la visualización
+      int disp2 = cont[0];
+      int disp3 = cont[1];
+      int disp4 = cont[2];
+      int disp5 = cont[3];
+
+      // Mostrar los dígitos en los displays
+      disp(disp2, disp3, disp4, disp5);
+   }
+}
